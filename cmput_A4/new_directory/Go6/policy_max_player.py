@@ -21,7 +21,7 @@ class Go6Player():
         version : float
             version number (used by the GTP interface).
         """
-        self.name = "MCTS Player"
+        self.name = "Policy Max Player"
         self.version = 0.1
         self.MCTS= MCTS()
         self.rate = 0.1
@@ -29,9 +29,11 @@ class Go6Player():
         self.limit = limit
         self.exploration = exploration 
         
-    def policy(self,board,color):
-        return GoBoardUtil.generate_move_with_filter(board,pattern,check_selfatari)
-
+    def policy(self,board,color,probabilistic):
+        from board_util import GoBoardUtil
+        return GoBoardUtil.generate_move_with_filter(board, True, True, probabilistic)
+        
+        
     def run(self, board, color, print_info=False):
         self.MCTS.exploration = self.exploration
         self.MCTS.limit = self.limit
@@ -52,21 +54,13 @@ class Go6Player():
 
     def update(self, move):
         self.MCTS.update_with_move(move)
-
+    
     def get_move(self, board, color):
-        move = self.MCTS.get_move(board,
-                color,
-                komi=self.komi,
-                limit=self.limit,
-                selfatari=self.selfatari,
-                probabalistic=se
-                pattern=self.pattern,
-                num_simulation = self.num_simulation,
-                exploration = self.exploration)
+        move = self.policy(board, color, False)
         self.update(move)
         return move
 
 if __name__=='__main__':
-    c = GtpConnection(Go6Player(num_simulation), T)
+    c = GtpConnection(Go6Player(num_simulation), False)
     c.start_connection()
 

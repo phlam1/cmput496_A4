@@ -1,0 +1,42 @@
+Script started on Tue 11 Apr 2017 08:25:57 PM UTC
+]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4[00m (master) $  cp a4.tgz copy.tgz
+]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4[00m (master) $  mv[K[Kmkdir new_directory
+]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4[00m (master) $  mv copy.tgz new_directory
+]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4[00m (master) $  cd new_directory/
+]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4/new_directory[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4/new_directoory[00m (master) $ ls
+copy.tgz
+]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4/new_directory[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4/new_directoory[00m (master) $ tar -xvf copy.tgz
+Go6/
+Go6/board.py
+Go6/Go6.py
+Go6/feature.py
+Go6/pattern.py
+Go6/features_weight.dat
+Go6/mcts.py
+Go6/policy_max_player.py
+Go6/createFeatures.sh
+Go6/gtp_connection.py
+Go6/readme.txt
+Go6/board_util.py
+Go6/policy_probabilistic_player.py
+]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4/new_directory[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4/new_directoory[00m (master) $ [K[A]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4/new_directory[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4/new_directory[00m (master) $ ls
+[0m[01;34mGo6[0m/  copy.tgz
+]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4/new_directory[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4/new_directory[00m (master) $ cd ..
+]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4[00m (master) $ ls
+[0m[01;34mGo6[0m/  a4-sample.gtp  a4.tgz  [01;34mgogui-1.4.9[0m/  gogui-1.4.9.zip  [01;34mnew_directory[0m/  presubmission.log
+]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4[00m (master) $ gogui[K[K[K[K[Kcd new_directory/
+]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4/new_directory[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4/new_directory[00m (master) $ cd ..
+]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4[00m (master) $ mv gogui-1.4.9 new_directory/Go6
+]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4[00m (master) $ mv a4-sample.gtp new_directory/Go6/
+]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4[00m (master) $ cd new_directory
+]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4/new_directory[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4/new_directory[00m (master) $ ls
+[0m[01;34mGo6[0m/  copy.tgz
+]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4/new_directory[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4/new_directory[00m (master) $ cd Go6/
+]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4/new_directory/Go6[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4/new_directory/Go6[00m (master) $ ls
+Go6.py         board_util.py      features_weight.dat  mcts.py               policy_probabilistic_player.py
+a4-sample.gtp  createFeatures.sh  [0m[01;34mgogui-1.4.9[0m/         pattern.py            readme.txt
+board.py       feature.py         gtp_connection.py    policy_max_player.py
+]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4/new_directory/Go6[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4/new_directory/Go6[00m (master) $ gogui-1.4.9/bin/gogui-regress 'python3 Go6.py' a4-sample.gtp 
+]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4/new_directory/Go6[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4/new_directory/Go6[00m (master) $ [K]0;ubuntu@phlam1-cmput496-a4-4638145: ~/workspace/cmput_A4/new_directory/Go6[01;32mphlam1[00m:[01;34m~/workspace/cmput_A4/new_directory/Goo6[00m (master) $ exit
+
+Script done on Tue 11 Apr 2017 08:30:57 PM UTC
