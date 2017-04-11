@@ -423,10 +423,10 @@ class GoBoard(object):
         State of move and appropriate message for that move
         """
         
+        
         if point == None: #play a pass move
             msg = "Playing a pass move with %s color is permitted"%(color)
             return True, msg
-        
         if self.board[point] != EMPTY:
             c=self._point_to_coord(point)
             msg = "Row and Column: %d %d is already filled with a %s stone"%(c[0],c[1],GoBoardUtil.int_to_color(color))
@@ -434,13 +434,17 @@ class GoBoard(object):
         if point == self.ko_constraint:
             msg ="KO move is not permitted!"
             return False , msg
+        
         in_enemy_eye = self._is_eyeish(point) == GoBoardUtil.opponent(color)
+        
         self.board[point] = color
         self._is_empty = False
         self.captured_stones = []
         single_captures = []
         cap_inds = None
+        
         neighbors = self._neighbors(point)
+        
         for n in neighbors:
             if self.board[n]==BORDER:
                 continue
@@ -462,6 +466,7 @@ class GoBoard(object):
                         self.board[cap_inds]=EMPTY
         fboard = self._flood_fill(point)
         self.ko_constraint = single_captures[0] if in_enemy_eye and len(single_captures) == 1 else None
+        
         if not self.check_suicide:
             msg = "NO SUICIDE CHECKING. Playing a move with %s color in the row and column %d %d is permitted"%(color,c[0],c[1])
             return True, msg

@@ -8,6 +8,7 @@ from pattern import pat3set
 import sys
 import random
 
+
 class GoBoardUtil(object):
     
     @staticmethod       
@@ -15,12 +16,14 @@ class GoBoardUtil(object):
         komi = kwargs.pop('komi', 0)
         limit = kwargs.pop('limit', 1000)
         check_selfatari = kwargs.pop('selfatari', True)
+        probabilistic = kwargs.pop('probabilistic', None)
         pattern = kwargs.pop('pattern', True)
         if kwargs:
             raise TypeError('Unexpected **kwargs: %r' % kwargs)
         numPass = 0
         for _ in range(limit):
-            move = GoBoardUtil.generate_move_with_filter(board,pattern,check_selfatari)
+            move = GoBoardUtil.generate_move_with_filter(board,pattern,check_selfatari,probabilistic)
+            
             if move != None:
                 isLegalMove = board.move(move,color)
                 if not isLegalMove:
@@ -28,6 +31,7 @@ class GoBoardUtil(object):
                 assert isLegalMove
                 numPass = 0
             else:
+                
                 board.move(move,color)
                 numPass += 1
                 if numPass == 2:
@@ -64,6 +68,19 @@ class GoBoardUtil(object):
         return ' '.join(sorted(result))
 
     @staticmethod
+    def sorted_point_string_mod(points, ns, list_move_prob):
+        result = []
+        # for point in points:
+        #     x, y = GoBoardUtil.point_to_coord(point, ns)
+        #     result.append(GoBoardUtil.format_point((x, y)))
+        # return ' '.join((result))
+        for prob, point in list_move_prob:
+            x, y = GoBoardUtil.point_to_coord(point, ns)
+            result.append(GoBoardUtil.format_point((x, y)))
+            result.append('%.5f'%prob)
+        return ' '.join((result))
+            
+    @staticmethod
     def generate_pattern_moves(board):
         pattern_checking_set = board.last_moves_empty_neighbors()
         moves = []
@@ -94,6 +111,7 @@ class GoBoardUtil(object):
             Use in UI only. For playing, use generate_move_with_filter
             which is more efficient
         """
+        
         atari_moves,msg = GoBoardUtil.generate_atari_moves(board)
         atari_moves = GoBoardUtil.filter_moves(board, atari_moves, check_selfatari)
         if len(atari_moves) > 0:
@@ -104,6 +122,7 @@ class GoBoardUtil(object):
             return pattern_moves, "Pattern"
         return GoBoardUtil.generate_random_moves(board), "Random"
 
+
     @staticmethod
     def generate_random_moves(board):
         empty_points = board.get_empty_points()
@@ -113,6 +132,7 @@ class GoBoardUtil(object):
             if board.check_legal(move, color) and not board.is_eye(move, color):
                 moves.append(move)
         return moves
+    
 
     @staticmethod
     def generate_random_move(board):
@@ -130,7 +150,7 @@ class GoBoardUtil(object):
                     moves[index] = moves[lastIndex]
                 moves.pop()
         return None
-
+    
     @staticmethod
     def filter_moves(board, moves, check_selfatari):
         color = board.current_player
@@ -162,15 +182,65 @@ class GoBoardUtil(object):
             return GoBoardUtil.filleye_filter(board, move, color)
 
     @staticmethod 
-    def filter_moves_and_generate(board, moves, check_selfatari):
+    def filter_moves_and_generate(board, moves, check_selfatari, probabilistic = True ):
+        
         color = board.current_player
-        while len(moves) > 0:
-            candidate = random.choice(moves)
-            if GoBoardUtil.filter(board, candidate, color, check_selfatari):
-                moves.remove(candidate)
+        candidates = []
+        
+        if probabilistic is None:
+            while len(moves) > 0:
+                candidate = random.choice(moves)
+                if GoBoardUtil.filter(board, candidate, color, check_selfatari):
+                    moves.remove(candidate)
+                else:
+                    return candidate
+        else: 
+            for move in moves:
+                if not GoBoardUtil.filter(board, move, color, check_selfatari):
+                    candidates.append(move)
+        
+        if len(candidates) == 0:
+            return None
+            
+        else:
+
+            # use feature.py evaluation to pick the  candidate, instead of a random one.
+            from feature import Feature
+            from feature import Features_weight
+        
+            
+            # example code to get probabilities found in mcts.py:39.exapand
+            
+            gammas_sum = 0.0
+            all_board_features = Feature.find_all_features(board)
+            
+            candidates.append("PASS")
+            probabilities = np.zeros((len(candidates),))
+            p = 0
+            
+            for move in candidates:
+                if len(Features_weight) != 0: 
+                    # when we have features weight, use that to compute knowledge (gamma) of each move
+                    assert move in all_board_features
+                    probabilities[p] = Feature.compute_move_gamma(Features_weight, all_board_features[move])
+                    gammas_sum += probabilities[p]
+                p += 1
+            
+            
+            # Normalize to get probability
+            if len(Features_weight) != 0 and gammas_sum != 0.0:
+                probabilities /= gammas_sum
+            
+            if probabilistic == True:  #, then pick by distibution
+                best_move = np.random.choice(candidates, p=probabilities)
             else:
-                return candidate
-        return None
+                best_move = candidates[np.argmax(probabilities)]
+            
+            if best_move == "PASS":
+                return None
+            
+            return int(best_move)
+            
 
     @staticmethod
     def atari_defence(board, point, color):
@@ -212,7 +282,7 @@ class GoBoardUtil(object):
         return moves
     
     @staticmethod
-    def generate_move_with_filter(board, use_pattern, check_selfatari):
+    def generate_move_with_filter(board, use_pattern, check_selfatari, probabilistic = None):
         """
             Arguments
             ---------
@@ -222,17 +292,22 @@ class GoBoardUtil(object):
         """
         move = None
         #TODO make dictionary for options so argument passing becomes cleaner and add atari defence to it
-        moves,_ = GoBoardUtil.generate_atari_moves(board)
+        moves, _ = GoBoardUtil.generate_atari_moves(board)
         move = GoBoardUtil.filter_moves_and_generate(board, moves, 
-                                                  check_selfatari)
+                                                  check_selfatari, probabilistic)
         if move:
+            
             return move
         if use_pattern:
             moves = GoBoardUtil.generate_pattern_moves(board)
             move = GoBoardUtil.filter_moves_and_generate(board, moves, 
-                                                         check_selfatari)
+                                                         check_selfatari, probabilistic)
         if move == None:
-            move = GoBoardUtil.generate_random_move(board)
+            moves = GoBoardUtil.generate_random_moves(board)
+            move = GoBoardUtil.filter_moves_and_generate(board, moves, 
+                                                         check_selfatari, probabilistic)
+            
+        
         return move 
     
     @staticmethod

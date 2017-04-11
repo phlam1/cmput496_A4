@@ -15,7 +15,7 @@ from feature import Feature
 
 class GtpConnection():
 
-    def __init__(self, go_engine, debug_mode = False):
+    def __init__(self, go_engine, probabilistic=None, debug_mode = False):
         """
         Play Go over a GTP connection
 
@@ -34,6 +34,7 @@ class GtpConnection():
         self.go_engine = go_engine
         self.go_engine.komi = 6.5
         self.go_engine.selfatari = 1 
+        self.go_engine.probabilistic = probabilistic
         self.go_engine.pattern = 1
         self.board = GoBoard(7)
         self.mm_file_name = "features_mm_training.dat"
@@ -315,10 +316,39 @@ class GtpConnection():
         policy_moves, type_of_move = GoBoardUtil.generate_all_policy_moves(self.board,
                                                 self.go_engine.pattern,
                                                 self.go_engine.selfatari)
+                                                
+        from feature import Feature
+        from feature import Features_weight
+     
+        gammas_sum = 0.0
+        all_board_features = Feature.find_all_features(self.board)
+        
+        probabilities = np.zeros((len(policy_moves),))
+        p = 0
+        
+        for move in policy_moves:
+            if len(Features_weight) != 0: 
+                # when we have features weight, use that to compute knowledge (gamma) of each move
+                assert move in all_board_features
+                probabilities[p] = Feature.compute_move_gamma(Features_weight, all_board_features[move])
+                gammas_sum += probabilities[p]
+            p += 1
+            
+        # Normalize to get probability
+        if len(Features_weight) != 0 and gammas_sum != 0.0:
+            probabilities /= gammas_sum
+                
+        list_move_prob = []
+        for index in range(len(policy_moves)):
+            temp = (probabilities[index], policy_moves[index])
+            list_move_prob.append(temp)
+        
+        list_move_prob = sorted(list_move_prob, key=lambda x: x[0], reverse=True)
+        
         if len(policy_moves) == 0:
-            self.respond("Pass")
+            self.respond("pass 1.00000")
         else:
-            response = type_of_move + " " + GoBoardUtil.sorted_point_string(policy_moves, self.board.NS)
+            response = GoBoardUtil.sorted_point_string_mod(policy_moves, self.board.NS, list_move_prob)
             self.respond(response)
 
     def random_moves_cmd(self, args):

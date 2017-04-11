@@ -164,6 +164,7 @@ class MCTS(object):
                 komi=self.komi,
                 limit=self.limit,
                 selfatari=self.selfatari,
+                probabilistic=self.probabilistic,
                 pattern=self.pattern)
         if winner == BLACK:
             return 1
@@ -176,6 +177,7 @@ class MCTS(object):
             komi,
             limit,
             selfatari,
+            probabilistic,
             pattern,
             num_simulation,
             exploration):
@@ -184,6 +186,7 @@ class MCTS(object):
         self.komi = komi
         self.limit = limit
         self.selfatari = selfatari
+        self.probabilistic = probabilistic
         self.pattern = pattern
         self.toplay = color
         self.exploration = exploration

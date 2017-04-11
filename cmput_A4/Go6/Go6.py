@@ -38,6 +38,7 @@ class Go6Player():
         self.MCTS.toplay = color
         self.MCTS.pattern = True
         self.MCTS.selfatari = True
+        self.MCTS.probabilistic = True
 
         for n in range(self.num_simulation):
             board_copy = board.copy()
@@ -58,6 +59,7 @@ class Go6Player():
                 komi=self.komi,
                 limit=self.limit,
                 selfatari=self.selfatari,
+                probabilistic=self.probabilistic,
                 pattern=self.pattern,
                 num_simulation = self.num_simulation,
                 exploration = self.exploration)
@@ -65,6 +67,6 @@ class Go6Player():
         return move
 
 if __name__=='__main__':
-    c = GtpConnection(Go6Player(num_simulation))
+    c = GtpConnection(Go6Player(num_simulation), True)
     c.start_connection()
 
